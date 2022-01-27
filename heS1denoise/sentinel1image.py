@@ -80,7 +80,69 @@ def block_scaling_factor(sigma0, nesz, swath_bounds, *,
     :returns: NoiseScalingFactorResults instance containing scaling factors and
               associated parameters for each lines
     '''
-    pass
+    nlines, npixels = sigma0.shape
+    pixel = np.arange(npixels)
+
+    sigma0_average, line = get_range_profiles(sigma0,
+                                              azimuth_window=azimuth_window,
+                                              minimum_lines=minimum_lines)
+    nesz_average, _ = get_range_profiles(nesz,
+                                         azimuth_window=azimuth_window,
+                                         minimum_lines=minimum_lines)
+
+    # Subsample averages in range direction
+    if zoom_step > 1:
+        sigma0_average = [s0avg[::zoom_step] for s0avg in sigma0_average]
+        nesz_average = [neszavg[::zoom_step] for neszavg in nesz_average]
+        pixel = pixel[::zoom_step]
+        
+    results = {}
+    for swid in s1.swath_ids:
+        swath_name = f'{s1.obsMode}{swid}'
+        results[swath_name] = {
+            'sigma0': [],
+            'noise_equivalent_sigma0': [],
+            'scaling_factor': [],
+            'correlation_coefficient': [],
+            'fit_residual': [],
+            'block_variance': [],
+            }
+
+        swath_bound = swath_bounds[swath_name]
+        zipped = zip(
+            swath_bound['firstAzimuthLine'],
+            swath_bound['lastAzimuthLine'],
+            swath_bound['firstRangeSample'],
+            swath_bound['lastRangeSample']
+            )
+
+        for fal, lal, frs, lrs in zipped:
+            valid1 = np.where( (line >= fal) &
+                               (line <= lal) )[0]
+
+            for v1 in valid1:
+                valid2 = np.where( (pixel >= frs+crop) &
+                                   (pixel <= lrs-crop) &
+                                   np.isfinite(nesz_average[v1]) )[0]
+            
+                meanS0 = sigma0_average[v1][valid2]
+                meanN0 = nesz_average[v1][valid2]
+                pixel_index = pixel[valid2]
+            
+                (scaling_factor,
+                 correlation_coefficient,
+                 fit_residual) = fit_noise_scaling_coeff(meanS0, meanN0, pixel_index)
+
+                block_variance = get_block_variance(meanS0, meanN0, scaling_factor)
+
+                results[swath_name]['sigma0'].append(meanS0)
+                results[swath_name]['noise_equivalent_sigma0'].append(meanN0)
+                results[swath_name]['scaling_factor'].append(scaling_factor)
+                results[swath_name]['correlation_coefficient'].append(correlation_coefficient)
+                results[swath_name]['fit_residual'].append(fit_residual)
+                results[swath_name]['block_variance'].append(block_variance)
+                
+    return results
 
 
 def range_profile_average(arr, minimum_lines=None):
