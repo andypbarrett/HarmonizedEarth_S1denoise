@@ -1,4 +1,5 @@
 from pathlib import Path
+from pprint import pprint
 
 from heS1denoise.sentinel1image import S1Image
 
@@ -36,7 +37,13 @@ def test_calc_block_scaling_factor(s1):
     s1.print_block_scaling_factors()
 
 
+def test_swath_scaling_factors(s1):
+    s1.calculate_swath_scaling_factors()
+    pprint(s1.swath_scaling_factor)
+    
+    
 if __name__ == "__main__":
     s1 = test_class_init()
     test_arrays_init(s1)
     test_calc_block_scaling_factor(s1)
+    test_swath_scaling_factors(s1)
