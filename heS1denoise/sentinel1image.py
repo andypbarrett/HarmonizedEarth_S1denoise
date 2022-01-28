@@ -232,3 +232,30 @@ def get_block_variance(s0, n0, k):
     n0_shifted = n0_scaled + offset
     s0_var = np.nanvar(s0 - n0_shifted)
     return s0_var
+
+
+def calc_swath_scaling_factor(result, variance_threshold = 10**-7.1):
+    '''Calculates the scaling factor for each subswath.  Subswath scaling factors
+    are estimated by taking the mean of all scaling_factors for a subswath that have a 
+    variance less than variance_threshold.  If no scaling_factors have an associated variance less
+    than variance_threshold, the mean of all scaling_factors is used.  Subswath blocks with
+    small variance are assumed to be homogeneous and indicative of open water.
+    
+    :result: dict containing results of scaling factor fit
+    :variance_threshold: threshold to include scaling_factors in calculation.  Sun et al (2021)
+                         estimated a threshold of 10**-7.1 from 100 images.
+                         
+    :returns: appends swath_scaling_factor to results dict
+    '''
+    # TODO: make results a class
+    scaling_factor = np.array(result['scaling_factor'])
+    variance = np.array(result['block_variance'])
+    
+    small_variance = variance < variance_threshold
+    
+    if not any(small_variance):
+        swath_scaling_factor = np.nanmean(scaling_factor)
+    else:
+        swath_scaling_factor = np.nanmean( np.where(small_variance, scaling_factor, np.nan) )
+        
+    return swath_scaling_factor
