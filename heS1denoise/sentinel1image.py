@@ -44,7 +44,12 @@ class S1Image(Sentinel1Image):
 
     def calculate_swath_scaling_factors(self, variance_threshold=10**-7.1):
         '''Calculates scaling factors for each swath from block scaling factors'''
-        pass
+        self.swath_scaling_factor = {}
+        for swath_name, swath_results in self.block_scaling_factors.items():
+            if 'IPFversion' in swath_name:
+                continue
+            self.swath_scaling_factor[swath_name] = \
+                calc_swath_scaling_factor(swath_results)
 
     
     def print_block_scaling_factors(self):
