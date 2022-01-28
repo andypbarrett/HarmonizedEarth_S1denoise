@@ -97,8 +97,7 @@ def block_scaling_factor(sigma0, nesz, swath_bounds, *,
         pixel = pixel[::zoom_step]
         
     results = {}
-    for swid in s1.swath_ids:
-        swath_name = f'{s1.obsMode}{swid}'
+    for swath_name, swath_bound in swath_bounds:
         results[swath_name] = {
             'sigma0': [],
             'noise_equivalent_sigma0': [],
@@ -108,7 +107,6 @@ def block_scaling_factor(sigma0, nesz, swath_bounds, *,
             'block_variance': [],
             }
 
-        swath_bound = swath_bounds[swath_name]
         zipped = zip(
             swath_bound['firstAzimuthLine'],
             swath_bound['lastAzimuthLine'],
