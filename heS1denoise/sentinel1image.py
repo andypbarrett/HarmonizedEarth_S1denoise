@@ -24,17 +24,27 @@ class S1Image(Sentinel1Image):
             }
 
 
-    def calculate_scaling_factors(self, zoom_step=1, crop=400,
+    def calculate_block_scaling_factors(self, band='HV', zoom_step=1, crop=400,
                                   azimuth_window=200, minimum_lines=50):
         '''Calculates NESZ noise scaling factors following Sun et al, 2021'''
+        if self.sigma0.size == 0:
+            self.sigma0 = self[self.get_band_number(band_id=f'sigma0_{band}')]
+        if self.nesz.size == 0:
+            self.nesz = self.get_nesz_full_size(band)
+            
         self.block_scaling_factors = block_scaling_factor(self.sigma0,
                                                      self.nesz,
-                                                     self.swath_bounds,
+                                                     self.swath_bounds[band],
                                                      zoom_step=zoom_step,
                                                      crop=crop,
                                                      azimuth_window=azimuth_window,
                                                      minimum_lines=minimum_lines)
-        self.block_scaling_factors['IPFversion'] = s1.IPFversion
+        self.block_scaling_factors['IPFversion'] = self.IPFversion
+
+
+    def print_block_scaling_factors(self):
+        '''Replace with a json dumps routine to write to a file if necessay'''
+        pprint(list(self.block_scaling_factors.keys()))
 
 
 class NoiseScalingFactorResults:
