@@ -31,6 +31,12 @@ def test_arrays_init(s1):
     print(f'{test_arrays_init.__name__}: nesz, nesz_scaled, sigma0, sigma0_denoised all empty ndarrays')
 
 
+def test_calc_block_scaling_factor(s1):
+    s1.calculate_block_scaling_factors()
+    s1.print_block_scaling_factors()
+
+
 if __name__ == "__main__":
     s1 = test_class_init()
     test_arrays_init(s1)
+    test_calc_block_scaling_factor(s1)
