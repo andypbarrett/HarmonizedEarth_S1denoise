@@ -111,7 +111,7 @@ def block_scaling_factor(sigma0, nesz, swath_bounds, *,
         pixel = pixel[::zoom_step]
         
     results = {}
-    for swath_name, swath_bound in swath_bounds:
+    for swath_name, swath_bound in swath_bounds.items():
         results[swath_name] = {
             'sigma0': [],
             'noise_equivalent_sigma0': [],
