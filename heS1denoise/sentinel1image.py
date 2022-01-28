@@ -1,6 +1,7 @@
 '''Classes and methods to denoise Sentinel1 images'''
 
 import warnings
+from pprint import pprint
 
 import numpy as np
 
@@ -23,14 +24,17 @@ class S1Image(Sentinel1Image):
             }
 
 
-    def calculate_scaling_factors(self):
+    def calculate_scaling_factors(self, zoom_step=1, crop=400,
+                                  azimuth_window=200, minimum_lines=50):
         '''Calculates NESZ noise scaling factors following Sun et al, 2021'''
-        block_scaling_factors = {}
-        block_scaling_factors['IPFversion'] = s1.IPFversion
-
-        for swid in s1.swath_ids:
-            swath_name = f'{s1.obsMode}{swid}'
-            block_scaling_factors[swath_name] = NoiseScalingFactorResults()
+        self.block_scaling_factors = block_scaling_factor(self.sigma0,
+                                                     self.nesz,
+                                                     self.swath_bounds,
+                                                     zoom_step=zoom_step,
+                                                     crop=crop,
+                                                     azimuth_window=azimuth_window,
+                                                     minimum_lines=minimum_lines)
+        self.block_scaling_factors['IPFversion'] = s1.IPFversion
 
 
 class NoiseScalingFactorResults:
