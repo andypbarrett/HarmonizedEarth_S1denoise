@@ -42,9 +42,18 @@ class S1Image(Sentinel1Image):
         self.block_scaling_factors['IPFversion'] = self.IPFversion
 
 
+    def calculate_swath_scaling_factors(self, variance_threshold=10**-7.1):
+        '''Calculates scaling factors for each swath from block scaling factors'''
+        pass
+
+    
     def print_block_scaling_factors(self):
         '''Replace with a json dumps routine to write to a file if necessay'''
-        pprint(list(self.block_scaling_factors.keys()))
+        for swath_name, swath_results in self.block_scaling_factors.items():
+            if 'IPFversion' in swath_name:
+                continue
+            print(swath_name)
+            print(list(swath_results.keys()))
 
 
 class NoiseScalingFactorResults:
