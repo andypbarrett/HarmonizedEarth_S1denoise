@@ -52,6 +52,13 @@ class S1Image(Sentinel1Image):
                 calc_swath_scaling_factor(swath_results)
 
     
+    def apply_noise_scaling(self, band='HV'):
+        '''Applys scaling factors to NESZ'''
+        self.nesz_scaled = get_corrected_nesz(self.nesz,
+                                              self.swath_bounds[band],
+                                              self.swath_scaling_factor)
+
+
     def print_block_scaling_factors(self):
         '''Replace with a json dumps routine to write to a file if necessay'''
         for swath_name, swath_results in self.block_scaling_factors.items():
@@ -266,8 +273,21 @@ def calc_swath_scaling_factor(result, variance_threshold = 10**-7.1):
     return swath_scaling_factor
 
 
-def get_corrected_nesz():
+def get_corrected_nesz(nesz, swath_bounds, scaling_factors):
     '''Apply noise scaling factors to NESZ following s1denoise
 
     '''
-    
+    nesz_corrected = np.array(nesz)
+
+    for swath_name, swath_bound in swath_bounds.items():
+        zipped = zip(
+            swath_bound['firstAzimuthLine'],
+            swath_bound['lastAzimuthLine'],
+            swath_bound['firstRangeSample'],
+            swath_bound['lastRangeSample']
+            )
+
+        for fal, lal, frs, lrs in zipped:
+            nesz_corrected[fal:lal+1, frs:lrs+1] *= scaling_factors[swath_name]
+
+    return nesz_corrected
