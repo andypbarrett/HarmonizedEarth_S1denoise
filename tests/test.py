@@ -40,6 +40,10 @@ def test_calc_block_scaling_factor(s1):
 def test_swath_scaling_factors(s1):
     s1.calculate_swath_scaling_factors()
     pprint(s1.swath_scaling_factor)
+
+
+def test_apply_scaling_factor(s1):
+    s1.apply_noise_scaling()
     
     
 if __name__ == "__main__":
@@ -47,3 +51,4 @@ if __name__ == "__main__":
     test_arrays_init(s1)
     test_calc_block_scaling_factor(s1)
     test_swath_scaling_factors(s1)
+    test_apply_scaling_factor(s1)
