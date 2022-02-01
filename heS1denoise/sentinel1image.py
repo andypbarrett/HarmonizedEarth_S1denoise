@@ -264,3 +264,10 @@ def calc_swath_scaling_factor(result, variance_threshold = 10**-7.1):
         swath_scaling_factor = np.nanmean( np.where(small_variance, scaling_factor, np.nan) )
         
     return swath_scaling_factor
+
+
+def get_corrected_nesz():
+    '''Apply noise scaling factors to NESZ following s1denoise
+
+    '''
+    
