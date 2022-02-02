@@ -29,6 +29,7 @@ class S1Image(Sentinel1Image):
         '''Calculates NESZ noise scaling factors following Sun et al, 2021'''
         if self.sigma0.size == 0:
             self.sigma0 = self[self.get_band_number(band_id=f'sigma0_{band}')]
+            self.sigma0 = np.where(self.sigma0 == 0., np.nan, self.sigma0)
         if self.nesz.size == 0:
             self.nesz = self.get_nesz_full_size(band)
             
