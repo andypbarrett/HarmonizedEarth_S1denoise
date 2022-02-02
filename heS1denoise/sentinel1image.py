@@ -281,6 +281,8 @@ def calc_swath_scaling_factor(result, variance_threshold = 10**-7.1):
 def get_corrected_nesz(nesz, swath_bounds, scaling_factors):
     '''Apply noise scaling factors to NESZ following s1denoise
 
+    Maybe this is a one-and-done routine that includes getting scaling factors and
+    applying these to nesz
     '''
     nesz_corrected = np.array(nesz)
 
