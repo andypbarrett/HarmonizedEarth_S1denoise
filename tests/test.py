@@ -46,9 +46,14 @@ def test_apply_scaling_factor(s1):
     s1.apply_noise_scaling()
     
     
+def test_remove_thermal_noise(s1):
+    s1.remove_thermal_noise()
+
+
 if __name__ == "__main__":
     s1 = test_class_init()
     test_arrays_init(s1)
-    test_calc_block_scaling_factor(s1)
-    test_swath_scaling_factors(s1)
-    test_apply_scaling_factor(s1)
+    #test_calc_block_scaling_factor(s1)
+    #test_swath_scaling_factors(s1)
+    #test_apply_scaling_factor(s1)
+    test_remove_thermal_noise(s1)
