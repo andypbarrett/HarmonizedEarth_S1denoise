@@ -97,11 +97,18 @@ class S1Image(Sentinel1Image):
     def plot_denoised_images(self, band='HV'):
         '''Plots results'''
         fig, ax = plt.subplots(1, 2, figsize=(12, 6))
-        ax[0].imshow(self.sigma0, vmin=0, vmax=0.01)
+        img0 = ax[0].imshow(self.sigma0, vmin=0, vmax=0.01)
         ax[0].set_title('Raw Sigma0')
+        ax[0].set_xlabel('Range')
+        ax[0].set_ylabel('Azimuth')
 
-        ax[1].imshow(self.sigma0_denoised, vmin=0, vmax=0.01)
+        img1 = ax[1].imshow(self.sigma0_denoised, vmin=0, vmax=0.01)
         ax[1].set_title('Sigma0 Denoised')
+        ax[1].set_xlabel('Range')
+        ax[1].set_ylabel('Azimuth')
+
+        fig.colorbar(img0, ax=ax, shrink=0.6)
+        
         plt.show()
 
 
