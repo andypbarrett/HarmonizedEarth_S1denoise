@@ -59,6 +59,11 @@ class S1Image(Sentinel1Image):
                                               self.swath_scaling_factor)
 
 
+    def get_sigma0_corrected(self, band='HV'):
+        '''Subtract scaled NESZ from sigma0'''
+        self.sigma0_denoised -= self.nesz_scaled
+
+
     def print_block_scaling_factors(self):
         '''Replace with a json dumps routine to write to a file if necessay'''
         for swath_name, swath_results in self.block_scaling_factors.items():
