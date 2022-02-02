@@ -48,7 +48,8 @@ def test_apply_scaling_factor(s1):
     
 def test_remove_thermal_noise(s1):
     s1.remove_thermal_noise()
-
+    s1.plot_denoised_images()
+    
 
 if __name__ == "__main__":
     s1 = test_class_init()
