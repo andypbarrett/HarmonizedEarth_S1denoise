@@ -4,6 +4,7 @@ import warnings
 from pprint import pprint
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from s1denoise import Sentinel1Image
 from s1denoise.utils import fit_noise_scaling_coeff
