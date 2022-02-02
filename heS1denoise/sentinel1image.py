@@ -61,7 +61,26 @@ class S1Image(Sentinel1Image):
 
     def get_sigma0_corrected(self, band='HV'):
         '''Subtract scaled NESZ from sigma0'''
-        self.sigma0_denoised -= self.nesz_scaled
+        self.sigma0_denoised = self.sigma0 - self.nesz_scaled
+
+
+    def remove_thermal_noise(self, band='HV', method='Sun', verbose=False):
+        '''Removes thermal noise from sigma0
+
+        :band: image band (e.g. HH, HV)
+        :method: method to calculate NESZ
+
+            Sun - (default) Scales NESZ using method from Sun et al 2021.
+            NERSC - Scales NESZ using method described in Park et al 2019.
+            ESA - No scaling applied to NESZ - uses noise from annotation files.
+        '''
+        if verbose: print('Calculating block scaling factors')
+        self.calculate_block_scaling_factors()
+        if verbose: print('Calculating swath scaling factors')
+        self.calculate_swath_scaling_factors()
+        if verbose: print('Getting scaled NESZ')
+        self.apply_noise_scaling()
+        self.get_sigma0_corrected()
 
 
     def print_block_scaling_factors(self):
@@ -71,6 +90,17 @@ class S1Image(Sentinel1Image):
                 continue
             print(swath_name)
             print(list(swath_results.keys()))
+
+
+    def plot_denoised_images(self, band='HV'):
+        '''Plots results'''
+        fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+        ax[0].imshow(self.sigma0, vmin=0, vmax=0.01)
+        ax[0].set_title('Raw Sigma0')
+
+        ax[1].imshow(self.sigma0_denoised, vmin=0, vmax=0.01)
+        ax[1].set_title('Sigma0 Denoised')
+        plt.show()
 
 
 class NoiseScalingFactorResults:
