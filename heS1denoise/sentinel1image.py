@@ -25,6 +25,7 @@ class S1Image(Sentinel1Image):
             }
 
 
+
     def calculate_block_scaling_factors(self, band='HV', zoom_step=1, crop=400,
                                   azimuth_window=200, minimum_lines=50):
         '''Calculates NESZ noise scaling factors following Sun et al, 2021'''
