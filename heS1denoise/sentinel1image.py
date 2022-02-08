@@ -232,8 +232,6 @@ def range_profile_average(arr, minimum_lines=None):
     :arr: 2D array
     :minimum_lines: minimum number of lines to calculate profile for
     '''
-    assert arr.ndim == 2, 'Expects 2D array'
-    
     with warnings.catch_warnings():
         warnings.filterwarnings(action='ignore', message='Mean of empty slice')
         profile_average = np.nanmean(arr, axis=0)
