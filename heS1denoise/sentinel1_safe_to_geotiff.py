@@ -6,12 +6,14 @@ sys.path.append('..')  #/heS1denoise')
 import warnings
 from pathlib import Path
 
+import numpy as np
+
 from heS1denoise.sentinel1image import S1Image
 from nansat import Nansat
 
 
 DATAPATH = Path('/media', 'apbarret', 'andypbarrett_work', 'Data',
-                'ExtremeEarthPolar', 'Images', 'Original')
+                'ExtremeEarthPolar', 'Images')
 
 images = [
     'S1A_EW_GRDM_1SDH_20180116T075430_20180116T075530_020177_0226B9_9FE3',
@@ -24,10 +26,18 @@ images = [
 
 def get_parameters(s1, band_id):
     """Wrapper to get parameters for a given band"""
-    parameters = s1.get_metadata(band_id='incidence_angle')
-    for i in ['dataType', 'PixelFunctionType', 'SourceBand', 'SourceFilename']:
-        if i in parameters:
-            parameters.pop(i)
+    if band_id in ['incidence_angle', 'sigma0_HH', 'sigma0_HV']:
+        parameters = s1.get_metadata(band_id=band_id)
+        for i in ['dataType', 'PixelFunctionType', 'SourceBand', 'SourceFilename']:
+            if i in parameters:
+                parameters.pop(i)
+    #elif band_id in ['nesz_HH', 'nesz_HV']:
+    #    parameters = s1.get_metadata(band_id=band_id.replace('nesz', 'noise'))
+    #    for i in ['dataType', 'PixelFunctionType', 'SourceBand', 'SourceFilename']:
+    #        if i in parameters:
+    #            parameters.pop(i)
+    else:
+        parameters = {'short_name': band_id.upper()}
     return parameters
 
 
@@ -43,45 +53,38 @@ def get_band(s1, band_id):
     return arr
 
     
-def to_geotiff(image_path, verbose=False):
+def to_geotiff(image_path, output_path, output_type=np.float32, verbose=False):
     """Extracts sigma0 for HH, HV, incidence angle and NESZ"""
+    print(f'Opening {image_path}')
     try:
         s1 = S1Image(image_path)
     except Exception as err:
         print(f'Failed to open {image_path}')
         print(err)
+        return
 
     n = Nansat.from_domain(s1)
 
-    if verbose: print('   Getting incidence_angle')
-    arr = get_band(s1, 'incidence_angle')
-    params = get_parameters(s1, 'indicence_angle')
-    print(arr.min(), arr.max())
-    print(arr.shape)
-    print(params)
-    
-    #if verbose: print('   Getting sigma0 for HH')
-    #sigma0_hh = s1['sigma0_HH']
+    bands = ['incidence_angle', 'sigma0_HH', 'sigma0_HV', 'nesz_HH', 'nesz_HV']
 
-    #if verbose: print('   Getting sigma0 for HV')
-    #sigma0_hv = s1['sigma0_HV']
+    for band in bands:
+        if verbose: print(f'   Getting {band}')
+        arr = get_band(s1, band)
+        params = get_parameters(s1, band)
+        n.add_band(array=arr.astype(output_type), parameters=params)
 
-    #if verbose: print('   Getting NESZ for HH')
-    #nesz_hh = s1.get_nesz_full_size('HH')
+    n.set_metadata(s1.get_metadata())
 
-    #if verbose: print('   Getting NESZ for HV')
-    #nesz_hv = s1.get_nesz_full_size('HV')
-    
-
-    #n.export(args.ofile, driver='GTiff')
+    if verbose: print(f'Writing data to {output_path}')
+    n.export(str(output_path), driver='GTiff')
 
 
 def main(verbose=False):
 
     for image_base in images:
-        image_path = DATAPATH / f'{image_base}.zip'
-        print(f'Opening {image_path}')
-        to_geotiff(image_path, verbose=verbose)
+        image_path = DATAPATH / 'Original' / f'{image_base}.zip'
+        output_path = DATAPATH / 'GeoTIFF' / f'{image_base}.tif'
+        to_geotiff(image_path, output_path, verbose=verbose)
         break
 
 
