@@ -85,7 +85,6 @@ def main(verbose=False):
         image_path = DATAPATH / 'Original' / f'{image_base}.zip'
         output_path = DATAPATH / 'GeoTIFF' / f'{image_base}.export.tif'
         to_geotiff(image_path, output_path, verbose=verbose)
-        break
 
 
 if __name__ == "__main__":
