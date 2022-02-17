@@ -271,7 +271,8 @@ def get_range_profiles(arr, azimuth_window=200, minimum_lines=50):
     for w0, w1 in zip(window_start, window_end):
         if w1 - w0 > minimum_lines:
             arr_average.append(range_profile_average(arr[w0:w1, :]))
-            
+        else:
+            arr_average.append(np.nan)
     return arr_average, lines
 
 
