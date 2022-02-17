@@ -31,11 +31,11 @@ def get_parameters(s1, band_id):
         for i in ['dataType', 'PixelFunctionType', 'SourceBand', 'SourceFilename']:
             if i in parameters:
                 parameters.pop(i)
-    #elif band_id in ['nesz_HH', 'nesz_HV']:
-    #    parameters = s1.get_metadata(band_id=band_id.replace('nesz', 'noise'))
-    #    for i in ['dataType', 'PixelFunctionType', 'SourceBand', 'SourceFilename']:
-    #        if i in parameters:
-    #            parameters.pop(i)
+    elif band_id in ['nesz_HH', 'nesz_HV']:
+        parameters = s1.get_metadata(band_id=band_id.replace('nesz', 'noise'))
+        for i in ['dataType', 'PixelFunctionType', 'SourceBand', 'SourceFilename']:
+            if i in parameters:
+                parameters.pop(i)
     else:
         parameters = {'short_name': band_id.upper()}
     return parameters
@@ -83,7 +83,7 @@ def main(verbose=False):
 
     for image_base in images:
         image_path = DATAPATH / 'Original' / f'{image_base}.zip'
-        output_path = DATAPATH / 'GeoTIFF' / f'{image_base}.tif'
+        output_path = DATAPATH / 'GeoTIFF' / f'{image_base}.export.tif'
         to_geotiff(image_path, output_path, verbose=verbose)
         break
 
