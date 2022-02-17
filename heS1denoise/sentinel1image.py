@@ -35,20 +35,20 @@ class S1Image(Sentinel1Image):
         if self.nesz.size == 0:
             self.nesz = self.get_nesz_full_size(band)
             
-        self.block_scaling_factors = block_scaling_factor(self.sigma0,
+        self.block_noise_scaling_factors = block_noise_scaling_factor(self.sigma0,
                                                      self.nesz,
                                                      self.swath_bounds[band],
                                                      zoom_step=zoom_step,
                                                      crop=crop,
                                                      azimuth_window=azimuth_window,
                                                      minimum_lines=minimum_lines)
-        self.block_scaling_factors['IPFversion'] = self.IPFversion
+        self.block_noise_scaling_factors['IPFversion'] = self.IPFversion
 
 
     def calculate_swath_scaling_factors(self, variance_threshold=10**-7.1):
         '''Calculates scaling factors for each swath from block scaling factors'''
         self.swath_scaling_factor = {}
-        for swath_name, swath_results in self.block_scaling_factors.items():
+        for swath_name, swath_results in self.block_noise_scaling_factors.items():
             if 'IPFversion' in swath_name:
                 continue
             self.swath_scaling_factor[swath_name] = \
@@ -145,7 +145,7 @@ class NoiseScalingFactorResults:
         return swath_scaling_factor
 
 
-def block_scaling_factor(sigma0, nesz, swath_bounds, *,
+def block_noise_scaling_factor(sigma0, nesz, swath_bounds, *,
                          zoom_step=1, crop=400,
                          azimuth_window=200, minimum_lines=50):
     '''Calculate scaling factor for a block
