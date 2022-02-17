@@ -179,6 +179,7 @@ def block_scaling_factor(sigma0, nesz, swath_bounds, *,
     results = {}
     for swath_name, swath_bound in swath_bounds.items():
         results[swath_name] = {
+            'line': [],
             'sigma0': [],
             'noise_equivalent_sigma0': [],
             'scaling_factor': [],
@@ -213,6 +214,7 @@ def block_scaling_factor(sigma0, nesz, swath_bounds, *,
 
                 block_variance = get_block_variance(meanS0, meanN0, scaling_factor)
 
+                results[swath_name]['line'].append(line[v1])
                 results[swath_name]['sigma0'].append(meanS0)
                 results[swath_name]['noise_equivalent_sigma0'].append(meanN0)
                 results[swath_name]['scaling_factor'].append(scaling_factor)
